@@ -18,19 +18,28 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.reademployeePayrollData();
 		assertEquals(3, employeePayrollData.size());
 	}
+
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.reademployeePayrollData();
-		employeePayrollService.updateEmployeePayrollSalary("terisa",300000.0);
+		employeePayrollService.updateEmployeePayrollSalary("terisa", 300000.0);
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("terisa");
 		System.out.println(result);
 		assertTrue(result);
 	}
+
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.retrieveByDate("2015-01-01");
-		employeePayrollData.forEach(System.out::println);
+		assertEquals(3, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenOperationOnGender_WhenRetrieved_ShouldMatchCount() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		double employeePayrollData = employeePayrollService.retrieveByGenderWithoperation("sum", "F");
+		assertEquals(300000.0, employeePayrollData,.1);
 	}
 }

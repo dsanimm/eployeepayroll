@@ -105,7 +105,7 @@ public class EmployeePayrollDBService {
 			PreparedStatement stmt = conn.prepareStatement(
 					"select * from employee_payroll where start between CAST(? as date) and DATE(now());");
 			stmt.setString(1, startDate);
-			System.out.println(stmt.toString());
+
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -121,6 +121,29 @@ public class EmployeePayrollDBService {
 		}
 
 		return employeeList;
+	}
+
+	public double retrieveByGenderWithOperation(String operation, String gender) {
+		ResultSet rs;
+		double result = 0;
+
+		List<EmployeePayrollData> employeeList = new ArrayList<>();
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			String sql = String.format("select %s(salary) from employee_payroll where gender = '%s' group by gender;",
+					operation, gender);
+			String header = String.format("%s(salary)", operation);
+			Statement stmt = conn.prepareStatement(sql);
+			System.out.println(sql);
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				result = rs.getDouble(header);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 }

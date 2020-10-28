@@ -32,6 +32,11 @@ public class EmployeePayrollService {
 		return new EmployeePayrollDBService().retrieveByDateFromDB(startDate);
 
 	}
+	public double retrieveByGenderWithoperation(String operation,String gender) {
+
+		return new EmployeePayrollDBService().retrieveByGenderWithOperation(operation,gender);
+
+	}
 
 	private EmployeePayrollData getEmployee(List<EmployeePayrollData> list, String name) {
 		return list.stream().filter(n -> n.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
