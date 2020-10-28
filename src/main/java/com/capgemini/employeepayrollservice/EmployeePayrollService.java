@@ -1,6 +1,7 @@
 package com.capgemini.employeepayrollservice;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,12 @@ public class EmployeePayrollService {
 		if (employeePayrollData != null) {
 			employeePayrollData.setSalary(salary);
 		}
+
+	}
+
+	public List<EmployeePayrollData> retrieveByDate(String startDate) {
+
+		return new EmployeePayrollDBService().retrieveByDateFromDB(startDate);
 
 	}
 

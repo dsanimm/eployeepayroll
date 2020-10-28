@@ -77,7 +77,7 @@ public class EmployeePayrollDBService {
 	}
 
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet resultSet) throws SQLException {
-		 List<EmployeePayrollData> employeeDataList = new ArrayList<EmployeePayrollData>();
+		List<EmployeePayrollData> employeeDataList = new ArrayList<EmployeePayrollData>();
 		while (resultSet.next()) {
 			int id = resultSet.getInt("Id");
 			String name = resultSet.getString("Name");
@@ -89,12 +89,38 @@ public class EmployeePayrollDBService {
 	}
 
 	private void prepareStatementForEmployeeData() {
-		try  {
+		try {
 			Connection conn = employeePayrollDBService.getConnection();
 			employeePayrollDataStatement = conn.prepareStatement("select * from employee_payroll where Name = ?;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<EmployeePayrollData> retrieveByDateFromDB(String startDate) {
+		ResultSet rs;
+		List<EmployeePayrollData> employeeList = new ArrayList<>();
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+
+			PreparedStatement stmt = conn.prepareStatement(
+					"select * from employee_payroll where start between CAST(? as date) and DATE(now());");
+			stmt.setString(1, startDate);
+			System.out.println(stmt.toString());
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				int id = rs.getInt("Id");
+				String name = rs.getString("Name");
+				Double salary = rs.getDouble("salary");
+				LocalDate startDated = rs.getDate("start").toLocalDate();
+				employeeList.add(new EmployeePayrollData(id, name, salary, startDated));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return employeeList;
 	}
 
 }

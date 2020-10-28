@@ -27,4 +27,10 @@ public class EmployeePayrollServiceTest {
 		System.out.println(result);
 		assertTrue(result);
 	}
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchCount() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.retrieveByDate("2015-01-01");
+		employeePayrollData.forEach(System.out::println);
+	}
 }
