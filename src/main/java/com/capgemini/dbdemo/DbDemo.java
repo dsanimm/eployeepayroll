@@ -1,4 +1,4 @@
-package dbdemo;
+package com.capgemini.dbdemo;
 
 import java.sql.*;
 import java.util.Enumeration;
