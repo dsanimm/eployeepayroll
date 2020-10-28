@@ -8,11 +8,11 @@ import java.util.List;
 import com.capgemini.pojo.EmployeePayrollData;
 
 public class EmployeePayrollDBService {
+	private static EmployeePayrollDBService employeePayrollDBService = new EmployeePayrollDBService();
+	private static PreparedStatement employeePayrollDataStatement;
+	static List<EmployeePayrollData> employeePayrollDataList = new ArrayList<EmployeePayrollData>();
 
 	public static List<EmployeePayrollData> readData() {
-		EmployeePayrollDBService employeePayrollDBService = new EmployeePayrollDBService();
-
-		List<EmployeePayrollData> employeePayrollDataList = new ArrayList<EmployeePayrollData>();
 
 		ResultSet rs;
 		try (Connection conn = employeePayrollDBService.getConnection()) {
@@ -45,6 +45,56 @@ public class EmployeePayrollDBService {
 		System.out.println("Connection is successful : " + conn);
 
 		return conn;
+	}
+
+	public int updateEmployeeData(String name, double salary) {
+
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement("update employee_payroll set salary = ? where name = ?;");
+			stmt.setDouble(1, salary);
+			stmt.setString(2, name);
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static List<EmployeePayrollData> getEmployeePayrollDataFromDB(String name) {
+		List<EmployeePayrollData> employeePayrollList = null;
+		if (employeePayrollDataStatement == null)
+			employeePayrollDBService.prepareStatementForEmployeeData();
+		try {
+			employeePayrollDataStatement.setString(1, name);
+			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
+			employeePayrollList = employeePayrollDBService.getEmployeePayrollData(resultSet);
+			return employeePayrollList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+
+	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet resultSet) throws SQLException {
+		 List<EmployeePayrollData> employeeDataList = new ArrayList<EmployeePayrollData>();
+		while (resultSet.next()) {
+			int id = resultSet.getInt("Id");
+			String name = resultSet.getString("Name");
+			Double salary = resultSet.getDouble("salary");
+			LocalDate startDate = resultSet.getDate("start").toLocalDate();
+			employeeDataList.add(new EmployeePayrollData(id, name, salary, startDate));
+		}
+		return employeeDataList;
+	}
+
+	private void prepareStatementForEmployeeData() {
+		try  {
+			Connection conn = employeePayrollDBService.getConnection();
+			employeePayrollDataStatement = conn.prepareStatement("select * from employee_payroll where Name = ?;");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
