@@ -42,4 +42,13 @@ public class EmployeePayrollServiceTest {
 		double employeePayrollData = employeePayrollService.retrieveByGenderWithoperation("sum", "F");
 		assertEquals(300000.0, employeePayrollData,.1);
 	}
+	@Test
+	public void givenNewEmployeeData_WhenUpdated_ShouldSyncWithDB() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.reademployeePayrollData();
+		employeePayrollService.addEmployee("tiger", 400000.0, "2017-04-02");
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("tiger");
+		System.out.println(result);
+		assertTrue(result);
+	}
 }

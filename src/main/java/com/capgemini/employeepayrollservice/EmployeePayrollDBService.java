@@ -146,4 +146,21 @@ public class EmployeePayrollDBService {
 		return result;
 	}
 
+	public int addEmployeeData(String name, double salary, String start) {
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+
+			PreparedStatement stmt = conn.prepareStatement(
+					"INSERT INTO employee_payroll(name, salary, start) values \r\n" + "			(	?, ?, ?	);");
+			stmt.setDouble(2, salary);
+			stmt.setString(1, name);
+			stmt.setString(3, start);
+			System.out.println(stmt.toString());
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 }

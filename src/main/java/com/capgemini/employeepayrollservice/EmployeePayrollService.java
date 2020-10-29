@@ -27,14 +27,27 @@ public class EmployeePayrollService {
 
 	}
 
+	public void addEmployee(String name, double salary, String start) {
+
+		int result = new EmployeePayrollDBService().addEmployeeData(name, salary, start);
+		if (result == 0)
+			return;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null) {
+			employeePayrollData.setSalary(salary);
+		}
+
+	}
+
 	public List<EmployeePayrollData> retrieveByDate(String startDate) {
 
 		return new EmployeePayrollDBService().retrieveByDateFromDB(startDate);
 
 	}
-	public double retrieveByGenderWithoperation(String operation,String gender) {
 
-		return new EmployeePayrollDBService().retrieveByGenderWithOperation(operation,gender);
+	public double retrieveByGenderWithoperation(String operation, String gender) {
+
+		return new EmployeePayrollDBService().retrieveByGenderWithOperation(operation, gender);
 
 	}
 
@@ -44,6 +57,9 @@ public class EmployeePayrollService {
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
 		List<EmployeePayrollData> employeePayrollDataList = EmployeePayrollDBService.getEmployeePayrollDataFromDB(name);
+		System.out.println(employeePayrollDataList.get(0));
+		System.out.println(getEmployeePayrollData(name));
+
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
