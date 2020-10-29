@@ -37,6 +37,16 @@ public class EmployeePayrollService {
 			employeePayrollData.setSalary(salary);
 		}
 
+	}public void addEmployeeDetailsWithPayroll(String name, double salary, String start,double deductions,double taxable_pay,double tax,double net_pay) {
+
+		int result = new EmployeePayrollDBService().addEmployeeDetailswPayroll(name, salary, start,deductions,taxable_pay,tax,net_pay);
+		if (result == 0)
+			return;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null) {
+			employeePayrollData.setSalary(salary);
+		}
+
 	}
 
 	public List<EmployeePayrollData> retrieveByDate(String startDate) {
@@ -57,9 +67,6 @@ public class EmployeePayrollService {
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
 		List<EmployeePayrollData> employeePayrollDataList = EmployeePayrollDBService.getEmployeePayrollDataFromDB(name);
-		System.out.println(employeePayrollDataList.get(0));
-		System.out.println(getEmployeePayrollData(name));
-
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 

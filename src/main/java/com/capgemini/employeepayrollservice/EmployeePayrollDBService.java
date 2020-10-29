@@ -92,9 +92,11 @@ public class EmployeePayrollDBService {
 		try {
 			Connection conn = employeePayrollDBService.getConnection();
 			employeePayrollDataStatement = conn.prepareStatement("select * from employee_payroll where Name = ?;");
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public List<EmployeePayrollData> retrieveByDateFromDB(String startDate) {
@@ -156,6 +158,36 @@ public class EmployeePayrollDBService {
 			stmt.setString(3, start);
 			System.out.println(stmt.toString());
 			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public int addEmployeeDetailswPayroll(String name, double salary, String start, double deductions,
+			double taxable_pay, double tax, double net_pay) {
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			conn.setAutoCommit(false);
+			PreparedStatement stmtEmployee = conn
+					.prepareStatement("INSERT INTO employee_payroll(name, salary, start) values (	?, ?, ?	);");
+			stmtEmployee.setDouble(2, salary);
+			stmtEmployee.setString(1, name);
+			stmtEmployee.setString(3, start);
+			System.out.println(stmtEmployee.toString());
+			stmtEmployee.executeUpdate();
+			PreparedStatement stmtPayroll = conn.prepareStatement("INSERT INTO payroll( basic_pay,deductions,\r\n"
+					+ "			 taxable_pay, tax, net_pay,Id) values (?, ?, ?,?,?,?);");
+			stmtPayroll.setDouble(1, salary);
+			stmtPayroll.setDouble(2, deductions);
+			stmtPayroll.setDouble(3, taxable_pay);
+			stmtPayroll.setDouble(4, tax);
+			stmtPayroll.setDouble(5, net_pay);
+			stmtPayroll.setInt(6, 24);
+			System.out.println(stmtPayroll.toString());
+			stmtPayroll.executeUpdate();
+			conn.commit();
+			return 1;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
