@@ -184,16 +184,44 @@ public class EmployeePayrollDBService {
 		return result;
 	}
 
-	public int addEmployeeData(String name, double salary, String start) {
+	public int addEmployeeData(String name, Double salary, String startDate,
+			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
+			String gender) {
 		try (Connection conn = employeePayrollDBService.getConnection()) {
-
+			int id = getMaxId();
+			conn.setAutoCommit(false);
 			PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO employee_payroll(name, salary, start) values \r\n" + "			(	?, ?, ?	);");
+					"INSERT INTO employee_payroll(name, salary, start,gender) values \r\n" + "			(	?, ?, ?,?	);");
 			stmt.setDouble(2, salary);
 			stmt.setString(1, name);
-			stmt.setString(3, start);
+			stmt.setString(3, startDate);
+			stmt.setString(4, gender);
 			System.out.println(stmt.toString());
-			return stmt.executeUpdate();
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement(
+					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n" + "(?, ?, ?,?,?,?);");
+			stmt.setDouble(1, salary);
+			stmt.setDouble(2, deductions);
+			stmt.setDouble(3, taxable_pay);
+			stmt.setDouble(4, tax);
+			stmt.setDouble(5, net_pay);
+			stmt.setInt(6, id);
+			System.out.println(stmt.toString());
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement(
+					"INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
+			stmt.setInt(1, id);
+			stmt.setString(2, department);
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement(
+					"INSERT INTO company(company_Id, Company_Name) values \r\n" + "(?, ?);");
+			stmt.setInt(1, id);
+			stmt.setString(2, company_Name);
+			stmt.executeUpdate();
+			conn.setAutoCommit(true);
+
+			return 1;
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

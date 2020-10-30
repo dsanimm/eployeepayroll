@@ -27,9 +27,12 @@ public class EmployeePayrollService {
 
 	}
 
-	public void addEmployee(String name, double salary, String start) {
+	public void addEmployee(String name, Double salary, String startDate,
+			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
+			String gender) {
 
-		int result = new EmployeePayrollDBService().addEmployeeData(name, salary, start);
+		int result = new EmployeePayrollDBService().addEmployeeData(name,salary,startDate,deductions,taxable_pay,tax,net_pay,department,company_Name,
+				gender);
 		if (result == 0)
 			return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
@@ -67,7 +70,8 @@ public class EmployeePayrollService {
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
 		List<EmployeePayrollData> employeePayrollDataList = EmployeePayrollDBService.getEmployeePayrollDataFromDB(name);
-		
+		System.out.println(employeePayrollDataList.get(0));
+		System.out.println(getEmployeePayrollData(name));
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
