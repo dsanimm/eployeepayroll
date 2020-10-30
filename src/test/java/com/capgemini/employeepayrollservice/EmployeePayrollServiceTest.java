@@ -33,7 +33,7 @@ public class EmployeePayrollServiceTest {
 	public void givenDateRange_WhenRetrieved_ShouldMatchCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.retrieveByDate("2015-01-01");
-		assertEquals(3, employeePayrollData.size());
+		assertEquals(4, employeePayrollData.size());
 	}
 
 	@Test
@@ -55,9 +55,10 @@ public class EmployeePayrollServiceTest {
 	public void givenNewEmployeePayrollData_WhenAdded_ShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.reademployeePayrollData();
+		System.out.println("true");
 		employeePayrollService.addEmployeeDetailsWithPayroll("liger", 500000.0, "2016-04-02",50000.0,350000.0,10000.0,340000.0);
-		//boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("liger");
-		//System.out.println(result);
-		//assertTrue(result);
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("liger");
+		System.out.println(result);
+		assertTrue(result);
 	}
 }
