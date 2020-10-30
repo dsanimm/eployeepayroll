@@ -26,6 +26,11 @@ public class EmployeePayrollService {
 		}
 
 	}
+	public void deleteEmployee(String name) {
+
+	 new EmployeePayrollDBService().deleteEmployeeData(name);
+
+	}
 
 	public void addEmployee(String name, Double salary, String startDate,
 			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,

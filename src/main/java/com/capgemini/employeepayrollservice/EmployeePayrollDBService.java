@@ -13,14 +13,12 @@ public class EmployeePayrollDBService {
 	static List<EmployeePayrollData> employeePayrollDataList = new ArrayList<EmployeePayrollData>();
 
 	public static List<EmployeePayrollData> readData() {
-
 		ResultSet rs;
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 
 			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery("select * FROM (((employee_payroll inner join emp_department on employee_payroll.Id = emp_department.Id) inner join payroll on employee_payroll.Id = payroll.Id)inner join Company on employee_payroll.Id = Company.company_Id); \r\n"
 					+ "");
-			
 			while (rs.next()) {
 				int id = rs.getInt("Id");
 				String name = rs.getString("Name");
@@ -274,8 +272,26 @@ public class EmployeePayrollDBService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return id;
+	}
+
+	public int deleteEmployeeData(String name) {
+		ResultSet rs;
+		double result = 0;
+
+		List<EmployeePayrollData> employeeList = new ArrayList<>();
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			String sql = String.format("delete from employee_payroll where name=%s;",
+					name);
+			Statement stmt = conn.prepareStatement(sql);
+			System.out.println(sql);
+			rs = stmt.executeQuery(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return 1;
 	}
 
 }

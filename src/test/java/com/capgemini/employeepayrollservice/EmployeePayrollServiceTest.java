@@ -61,4 +61,12 @@ public class EmployeePayrollServiceTest {
 		System.out.println(result);
 		assertTrue(result);
 	}
+	@Test
+	public void givenNEmployeeName_WhenDeleted_ShouldSyncWithDB() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.deleteEmployee("liger");
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.reademployeePayrollData();
+		String result = employeePayrollData.stream().filter(n -> n.getName().equalsIgnoreCase("liger")).findFirst().map(n -> n.getName()).orElse(null);
+		assertTrue(result ==(null));
+	}
 }
