@@ -1,6 +1,7 @@
 package com.capgemini.pojo;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 public class EmployeePayrollData {
 	private int id;
@@ -14,9 +15,10 @@ public class EmployeePayrollData {
 	double tax;
 	double net_pay;
 
-	String department;
+	String department[];
 	String Company_Name;
 	String gender;
+	String departments;
 
 	public LocalDate getStartDate() {
 		return startDate;
@@ -66,11 +68,11 @@ public class EmployeePayrollData {
 		this.net_pay = net_pay;
 	}
 
-	public String getDepartment() {
+	public String[] getDepartment() {
 		return department;
 	}
 
-	public void setDepartment(String department) {
+	public void setDepartment(String[] department) {
 		this.department = department;
 	}
 
@@ -83,7 +85,7 @@ public class EmployeePayrollData {
 	}
 
 	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, double basic_pay,
-			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
+			double deductions, double taxable_pay, double tax, double net_pay, String department[], String company_Name,
 			String gender) {
 		super();
 		this.id = id;
@@ -99,18 +101,61 @@ public class EmployeePayrollData {
 		Company_Name = company_Name;
 	}
 
+	public EmployeePayrollData( String name, Double salary, LocalDate startDate, double basic_pay,
+			double deductions, double taxable_pay, double tax, double net_pay, String department[], String company_Name,
+			String gender) {
+		super();
+		this.name = name;
+		this.salary = salary;
+		this.startDate = startDate;
+		this.basic_pay = basic_pay;
+		this.deductions = deductions;
+		this.taxable_pay = taxable_pay;
+		this.tax = tax;
+		this.net_pay = net_pay;
+		this.department = department;
+		Company_Name = company_Name;
+	}
+
+	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, double basic_pay,
+			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
+			String gender) {
+		super();
+		this.name = name;
+		this.salary = salary;
+		this.startDate = startDate;
+		this.basic_pay = basic_pay;
+		this.deductions = deductions;
+		this.taxable_pay = taxable_pay;
+		this.tax = tax;
+		this.net_pay = net_pay;
+		this.departments = department;
+		Company_Name = company_Name;
+	}
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDated) {
 		this.id = id;
 		this.name = name;
 		this.salary = salary;
 		this.startDate = startDated;	}
 
+
+
+
+
 	@Override
 	public String toString() {
 		return "EmployeePayrollData [id=" + id + ", name=" + name + ", salary=" + salary + ", startDate=" + startDate
 				+ ", basic_pay=" + basic_pay + ", deductions=" + deductions + ", taxable_pay=" + taxable_pay + ", tax="
-				+ tax + ", net_pay=" + net_pay + ", department=" + department + ", Company_Name=" + Company_Name
-				+ ", gender=" + gender + "]";
+				+ tax + ", net_pay=" + net_pay + ", department=" + Arrays.toString(department) + ", Company_Name="
+				+ Company_Name + ", gender=" + gender + "]";
 	}
 
 	public int getId() {

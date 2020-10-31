@@ -17,14 +17,15 @@ public class EmployeePayrollDBService {
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 
 			Statement stmt = conn.createStatement();
-			rs = stmt.executeQuery("select * FROM (((employee_payroll inner join emp_department on employee_payroll.Id = emp_department.Id) inner join payroll on employee_payroll.Id = payroll.Id)inner join Company on employee_payroll.Id = Company.company_Id); \r\n"
-					+ "");
+			rs = stmt.executeQuery(
+					"select * FROM (((employee_payroll inner join emp_department on employee_payroll.Id = emp_department.Id) inner join payroll on employee_payroll.Id = payroll.Id)inner join Company on employee_payroll.Id = Company.company_Id); \r\n"
+							+ "");
 			while (rs.next()) {
 				int id = rs.getInt("Id");
 				String name = rs.getString("Name");
 				Double salary = rs.getDouble("salary");
 				LocalDate startDate = rs.getDate("start").toLocalDate();
-				double basic_pay = rs.getDouble("basic_pay"); ;
+				double basic_pay = rs.getDouble("basic_pay");
 				double deductions = rs.getDouble("deductions");
 				double taxable_pay = rs.getDouble("taxable_pay");
 				double tax = rs.getDouble("tax");
@@ -32,8 +33,9 @@ public class EmployeePayrollDBService {
 				String department = rs.getString("department");
 				String Company_Name = rs.getString("Company_Name");
 				String gender = rs.getString("gender");
-				employeePayrollDataList.add(new EmployeePayrollData(id, name, salary, startDate,basic_pay,deductions,taxable_pay,tax,net_pay,department,Company_Name,gender));
-			
+				employeePayrollDataList.add(new EmployeePayrollData(id, name, salary, startDate, basic_pay, deductions,
+						taxable_pay, tax, net_pay, department, Company_Name, gender));
+
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -63,7 +65,7 @@ public class EmployeePayrollDBService {
 			stmt.setString(1, name);
 			ResultSet rs = stmt.executeQuery();
 			int Id = 0;
-			while(rs.next()) {
+			while (rs.next()) {
 				Id = rs.getInt("Id");
 			}
 			int id;
@@ -109,7 +111,8 @@ public class EmployeePayrollDBService {
 			String name = resultSet.getString("Name");
 			Double salary = resultSet.getDouble("salary");
 			LocalDate startDate = resultSet.getDate("start").toLocalDate();
-			double basic_pay = resultSet.getDouble("salary"); ;
+			double basic_pay = resultSet.getDouble("salary");
+			;
 			double deductions = resultSet.getDouble("deductions");
 			double taxable_pay = resultSet.getDouble("taxable_pay");
 			double tax = resultSet.getDouble("tax");
@@ -117,7 +120,8 @@ public class EmployeePayrollDBService {
 			String department = resultSet.getString("department");
 			String Company_Name = resultSet.getString("Company_Name");
 			String gender = resultSet.getString("gender");
-			employeeDataList.add(new EmployeePayrollData(id, name, salary, startDate,basic_pay,deductions,taxable_pay,tax,net_pay,department,Company_Name,gender));
+			employeeDataList.add(new EmployeePayrollData(id, name, salary, startDate, basic_pay, deductions,
+					taxable_pay, tax, net_pay, department, Company_Name, gender));
 		}
 		return employeeDataList;
 	}
@@ -125,8 +129,8 @@ public class EmployeePayrollDBService {
 	private void prepareStatementForEmployeeData() {
 		try {
 			Connection conn = employeePayrollDBService.getConnection();
-			employeePayrollDataStatement = conn.prepareStatement
-					("select * FROM (((employee_payroll inner join emp_department on employee_payroll.Id = emp_department.Id) inner join payroll on employee_payroll.Id = payroll.Id)inner join Company on employee_payroll.Id = Company.company_Id) where name = ?;");
+			employeePayrollDataStatement = conn.prepareStatement(
+					"select * FROM (((employee_payroll inner join emp_department on employee_payroll.Id = emp_department.Id) inner join payroll on employee_payroll.Id = payroll.Id)inner join Company on employee_payroll.Id = Company.company_Id) where name = ?;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -182,14 +186,14 @@ public class EmployeePayrollDBService {
 		return result;
 	}
 
-	public int addEmployeeData(String name, Double salary, String startDate,
-			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
-			String gender) {
+	public int addEmployeeData(String name, Double salary, String startDate, double deductions, double taxable_pay,
+			double tax, double net_pay, String department, String company_Name, String gender) {
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 			int id = getMaxId();
 			conn.setAutoCommit(false);
-			PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO employee_payroll(name, salary, start,gender) values \r\n" + "			(	?, ?, ?,?	);");
+			PreparedStatement stmt = conn
+					.prepareStatement("INSERT INTO employee_payroll(name, salary, start,gender) values \r\n"
+							+ "			(	?, ?, ?,?	);");
 			stmt.setDouble(2, salary);
 			stmt.setString(1, name);
 			stmt.setString(3, startDate);
@@ -197,7 +201,8 @@ public class EmployeePayrollDBService {
 			System.out.println(stmt.toString());
 			stmt.executeUpdate();
 			stmt = conn.prepareStatement(
-					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n" + "(?, ?, ?,?,?,?);");
+					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
+							+ "(?, ?, ?,?,?,?);");
 			stmt.setDouble(1, salary);
 			stmt.setDouble(2, deductions);
 			stmt.setDouble(3, taxable_pay);
@@ -206,13 +211,11 @@ public class EmployeePayrollDBService {
 			stmt.setInt(6, id);
 			System.out.println(stmt.toString());
 			stmt.executeUpdate();
-			stmt = conn.prepareStatement(
-					"INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
+			stmt = conn.prepareStatement("INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
 			stmt.setInt(1, id);
 			stmt.setString(2, department);
 			stmt.executeUpdate();
-			stmt = conn.prepareStatement(
-					"INSERT INTO company(company_Id, Company_Name) values \r\n" + "(?, ?);");
+			stmt = conn.prepareStatement("INSERT INTO company(company_Id, Company_Name) values \r\n" + "(?, ?);");
 			stmt.setInt(1, id);
 			stmt.setString(2, company_Name);
 			stmt.executeUpdate();
@@ -281,8 +284,7 @@ public class EmployeePayrollDBService {
 
 		List<EmployeePayrollData> employeeList = new ArrayList<>();
 		try (Connection conn = employeePayrollDBService.getConnection()) {
-			String sql = String.format("delete from employee_payroll where name=%s;",
-					name);
+			String sql = String.format("delete from employee_payroll where name=%s;", name);
 			Statement stmt = conn.prepareStatement(sql);
 			System.out.println(sql);
 			rs = stmt.executeQuery(sql);
@@ -292,6 +294,55 @@ public class EmployeePayrollDBService {
 		}
 
 		return 1;
+	}
+
+	public int addMultipleEmployeeData(List<EmployeePayrollData> empList) {
+
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			for (EmployeePayrollData e : empList) {
+				int id = getMaxId();
+				conn.setAutoCommit(false);
+				PreparedStatement stmt = conn
+						.prepareStatement("INSERT INTO employee_payroll(name, salary, start,gender) values \r\n"
+								+ "			(	?, ?, ?,?	);");
+				stmt.setDouble(2, e.getSalary());
+				stmt.setString(1, e.getName());
+				stmt.setString(3, e.getStartDate().toString());
+				stmt.setString(4, e.getGender());
+				System.out.println(stmt.toString());
+				stmt.executeUpdate();
+				stmt = conn.prepareStatement(
+						"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
+								+ "(?, ?, ?,?,?,?);");
+				stmt.setDouble(1, e.getSalary());
+				stmt.setDouble(2, e.getDeductions());
+				stmt.setDouble(3, e.getTaxable_pay());
+				stmt.setDouble(4, e.getTax());
+				stmt.setDouble(5, e.getNet_pay());
+				stmt.setInt(6, id);
+				System.out.println(stmt.toString());
+				stmt.executeUpdate();
+				for (int i = 0; i < e.getDepartment().length; i++) {
+					String department[] = e.getDepartment();
+					stmt = conn.prepareStatement("INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
+					stmt.setInt(1, id);
+					stmt.setString(2, department[i]);
+					stmt.executeUpdate();
+				}
+				stmt = conn.prepareStatement("INSERT INTO company(company_Id, Company_Name) values \r\n" + "(?, ?);");
+				stmt.setInt(1, id);
+				stmt.setString(2, e.getCompany_Name());
+				stmt.executeUpdate();
+				conn.setAutoCommit(true);
+			}
+
+			return 1;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 }

@@ -26,18 +26,18 @@ public class EmployeePayrollService {
 		}
 
 	}
+
 	public void deleteEmployee(String name) {
 
-	 new EmployeePayrollDBService().deleteEmployeeData(name);
+		new EmployeePayrollDBService().deleteEmployeeData(name);
 
 	}
 
-	public void addEmployee(String name, Double salary, String startDate,
-			double deductions, double taxable_pay, double tax, double net_pay, String department, String company_Name,
-			String gender) {
+	public void addEmployee(String name, Double salary, String startDate, double deductions, double taxable_pay,
+			double tax, double net_pay, String department, String company_Name, String gender) {
 
-		int result = new EmployeePayrollDBService().addEmployeeData(name,salary,startDate,deductions,taxable_pay,tax,net_pay,department,company_Name,
-				gender);
+		int result = new EmployeePayrollDBService().addEmployeeData(name, salary, startDate, deductions, taxable_pay,
+				tax, net_pay, department, company_Name, gender);
 		if (result == 0)
 			return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
@@ -45,9 +45,18 @@ public class EmployeePayrollService {
 			employeePayrollData.setSalary(salary);
 		}
 
-	}public void addEmployeeDetailsWithPayroll(String name, double salary, String start,double deductions,double taxable_pay,double tax,double net_pay) {
+	}
 
-		int result = new EmployeePayrollDBService().addEmployeeDetailswPayroll(name, salary, start,deductions,taxable_pay,tax,net_pay);
+	public void addMultipleEmployee(List<EmployeePayrollData> empList) {
+
+		int result = new EmployeePayrollDBService().addMultipleEmployeeData(empList);
+	}
+
+	public void addEmployeeDetailsWithPayroll(String name, double salary, String start, double deductions,
+			double taxable_pay, double tax, double net_pay) {
+
+		int result = new EmployeePayrollDBService().addEmployeeDetailswPayroll(name, salary, start, deductions,
+				taxable_pay, tax, net_pay);
 		if (result == 0)
 			return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
