@@ -3,7 +3,9 @@ package com.capgemini.employeepayrollservice;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.capgemini.pojo.*;
 
@@ -52,6 +54,11 @@ public class EmployeePayrollService {
 		int result = new EmployeePayrollDBService().addMultipleEmployeeData(empList);
 	}
 
+	public void addMultipleEmployeeWithThread(EmployeePayrollData e) {
+
+		int result = new EmployeePayrollDBService().addMultipleThreadEmployeeData(e);
+	}
+
 	public void addEmployeeDetailsWithPayroll(String name, double salary, String start, double deductions,
 			double taxable_pay, double tax, double net_pay) {
 
@@ -64,6 +71,36 @@ public class EmployeePayrollService {
 			employeePayrollData.setSalary(salary);
 		}
 
+	}
+
+	public void addListOfEmployeeWithThreads(List<EmployeePayrollData> empList) {
+		Map<Integer, Boolean> employeeAdditionalStatus = new HashMap<>();
+		empList.forEach(emp -> {
+			Runnable task = () -> {
+				employeeAdditionalStatus.put(emp.hashCode(), false);
+				System.out.println("Employee Being Added : " + Thread.currentThread().getName());
+				try {
+					new EmployeePayrollDBService().addMultipleThreadEmployeeData(
+							new EmployeePayrollData(emp.getName(), emp.getSalary(), emp.getStartDate(),
+									emp.getBasic_pay(), emp.getDeductions(), emp.getTaxable_pay(), emp.getTaxable_pay(),
+									emp.getNet_pay(), emp.getDepartment(), emp.getCompany_Name(), emp.getGender()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				employeeAdditionalStatus.put(emp.hashCode(), true);
+				System.out.println("Employee Added : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, emp.getName());
+			thread.start();
+		});
+		while (employeeAdditionalStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(employeePayrollList);
 	}
 
 	public List<EmployeePayrollData> retrieveByDate(String startDate) {

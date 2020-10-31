@@ -345,4 +345,51 @@ public class EmployeePayrollDBService {
 		return 0;
 	}
 
+	public int addMultipleThreadEmployeeData(EmployeePayrollData e) {
+
+		try (Connection conn = employeePayrollDBService.getConnection()) {
+			int id = getMaxId();
+			conn.setAutoCommit(false);
+			PreparedStatement stmt = conn
+					.prepareStatement("INSERT INTO employee_payroll(name, salary, start,gender) values \r\n"
+							+ "			(	?, ?, ?,?	);");
+			stmt.setDouble(2, e.getSalary());
+			stmt.setString(1, e.getName());
+			stmt.setString(3, e.getStartDate().toString());
+			stmt.setString(4, e.getGender());
+			System.out.println(stmt.toString());
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement(
+					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
+							+ "(?, ?, ?,?,?,?);");
+			stmt.setDouble(1, e.getSalary());
+			stmt.setDouble(2, e.getDeductions());
+			stmt.setDouble(3, e.getTaxable_pay());
+			stmt.setDouble(4, e.getTax());
+			stmt.setDouble(5, e.getNet_pay());
+			stmt.setInt(6, id);
+			System.out.println(stmt.toString());
+			stmt.executeUpdate();
+			for (int i = 0; i < e.getDepartment().length; i++) {
+				String department[] = e.getDepartment();
+				stmt = conn.prepareStatement("INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
+				stmt.setInt(1, id);
+				stmt.setString(2, department[i]);
+				stmt.executeUpdate();
+			}
+			stmt = conn.prepareStatement("INSERT INTO company(company_Id, Company_Name) values \r\n" + "(?, ?);");
+			stmt.setInt(1, id);
+			stmt.setString(2, e.getCompany_Name());
+			stmt.executeUpdate();
+			conn.setAutoCommit(true);
+
+			return 1;
+
+		} catch (SQLException m) {
+			// TODO Auto-generated catch block
+			m.printStackTrace();
+		}
+		return 0;
+	}
+
 }
