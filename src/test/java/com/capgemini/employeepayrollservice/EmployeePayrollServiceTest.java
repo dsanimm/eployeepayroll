@@ -5,7 +5,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -149,9 +151,10 @@ public class EmployeePayrollServiceTest {
 	@Test
 	public void givenEmployeeDetailsInJsonServer_whenAddedEnEmployee_shouldReturnNoOfCountsAndResponseCode() {
 		EmployeePayrollData[] empData = getEmployee();
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(empData));	
-		Response response = addEmployeeToJsonServer((new EmployeePayrollData("tiger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
-				10000.0, 10000.0, new String[] { "berserk" }, "patanjali", "F")));
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(empData));
+		Response response = addEmployeeToJsonServer(
+				(new EmployeePayrollData("tiger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "berserk" }, "patanjali", "F")));
 		int statusCode = response.getStatusCode();
 		assertEquals(201, statusCode);
 		EmployeePayrollData empDataFromResponse = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
@@ -161,4 +164,57 @@ public class EmployeePayrollServiceTest {
 		assertEquals(5, count);
 	}
 
+	@Test
+	public void givenEmployeeDetailsInJsonServer_whenAddedMultipleEmployeeWithThreads_shouldReturnNoOfCountsAndResponseCode() {
+		EmployeePayrollData[] empData = getEmployee();
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(empData));
+		EmployeePayrollData[] empArr = new EmployeePayrollData[] {
+				new EmployeePayrollData("tiger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "berserk" }, "patanjali", "F"),
+				new EmployeePayrollData("viger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "berserk", "one piece" }, "patanjali", "F"),
+				new EmployeePayrollData("niger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "naruto" }, "patanjali", "F"),
+				new EmployeePayrollData("wiger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "berserk", "naruto" }, "patanjali", "F"),
+				new EmployeePayrollData("siger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+						10000.0, 10000.0, new String[] { "berserk", "one piece", "naruto" }, "patanjali", "F") };
+		boolean result = addMultipleEmployeeToJsonServer(Arrays.asList(empArr),
+				employeePayrollService.employeePayrollList);
+		assertEquals(true, result);
+		System.out.println(employeePayrollService.employeePayrollList);
+		long count = employeePayrollService.employeePayrollList.size();
+		assertEquals(9, count);
+	}
+
+	private boolean addMultipleEmployeeToJsonServer(List<EmployeePayrollData> empArr,
+			List<EmployeePayrollData> employeePayrollList) {
+
+		Map<Integer, Boolean> employeeAdditionalStatus = new HashMap<>();
+		empArr.forEach(emp -> {
+			Runnable task = () -> {
+				employeeAdditionalStatus.put(emp.hashCode(), false);
+				System.out.println("Employee Being Added : " + Thread.currentThread().getName());
+				try {
+					addEmployeeToJsonServer(emp);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				employeeAdditionalStatus.put(emp.hashCode(), true);
+				System.out.println("Employee Added : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, emp.getName());
+			thread.start();
+		});
+		while (employeeAdditionalStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		// System.out.println(employeePayrollList);
+		return true;
+
+	}
 }
