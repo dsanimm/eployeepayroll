@@ -12,6 +12,13 @@ import com.capgemini.pojo.*;
 public class EmployeePayrollService {
 	public static List<EmployeePayrollData> employeePayrollList;
 
+	public EmployeePayrollService(List<EmployeePayrollData> empList) {
+		this.employeePayrollList = empList;
+	}
+
+	public EmployeePayrollService() {
+	}
+
 	public List<EmployeePayrollData> reademployeePayrollData() {
 		this.employeePayrollList = new EmployeePayrollDBService().readData();
 		return this.employeePayrollList;
@@ -121,8 +128,6 @@ public class EmployeePayrollService {
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
 		List<EmployeePayrollData> employeePayrollDataList = EmployeePayrollDBService.getEmployeePayrollDataFromDB(name);
-		System.out.println(employeePayrollDataList.get(0));
-		System.out.println(getEmployeePayrollData(name));
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 

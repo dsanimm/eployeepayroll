@@ -7,16 +7,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.capgemini.employeepayrollservice.EmployeePayrollService;
 
 import com.capgemini.pojo.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import junit.framework.Assert;
 import static org.junit.Assert.*;
 
 public class EmployeePayrollServiceTest {
+	@Before
+	public void setup() {
+		RestAssured.baseURI = "http://localhost";
+		RestAssured.port = 3000;
+	}
+
+	public EmployeePayrollData[] getEmployee() {
+		Response response = RestAssured.get("/employee_details");
+		System.out.println("Employee Payroll entries in Json Server : \n" + response.asString());
+		EmployeePayrollData[] empdata = new Gson().fromJson(response.asString(), EmployeePayrollData[].class);
+		return empdata;
+	}
+
+	private Response addEmployeeToJsonServer(EmployeePayrollData newEmp) {
+		String empJson = new GsonBuilder().setPrettyPrinting().create().toJson(newEmp);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-type", "application/json");
+		request.body(empJson);
+		return request.post("/employee_details");
+	}
+
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -95,7 +122,6 @@ public class EmployeePayrollServiceTest {
 				new EmployeePayrollData("siger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
 						10000.0, 10000.0, new String[] { "berserk", "one piece", "naruto" }, "patanjali", "F") };
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.reademployeePayrollData();
 		Instant start = Instant.now();
 		employeePayrollService.addMultipleEmployee((Arrays.asList(empArr)));
 		Instant end = Instant.now();
@@ -104,11 +130,35 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addListOfEmployeeWithThreads(Arrays.asList(empArr));
 		Instant endWithThread = Instant.now();
 		System.out.println("Duration With Thread :" + Duration.between(startWithThread, endWithThread));
-		for(EmployeePayrollData emp:employeePayrollService.employeePayrollList) {
+		employeePayrollService.reademployeePayrollData();
+		for (EmployeePayrollData emp : employeePayrollService.employeePayrollList) {
 			System.out.println(emp);
 		}
 		assertEquals(14, employeePayrollService.employeePayrollList.size());
 
+	}
+
+	@Test
+	public void givenEmployeeDetailsInJsonServer_whenRetrieved_shouldReturnNoOfCounts() {
+		EmployeePayrollData[] empData = getEmployee();
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(empData));
+		long entries = employeePayrollService.employeePayrollList.size();
+		assertEquals(5, entries);
+	}
+
+	@Test
+	public void givenEmployeeDetailsInJsonServer_whenAddedEnEmployee_shouldReturnNoOfCountsAndResponseCode() {
+		EmployeePayrollData[] empData = getEmployee();
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(empData));	
+		Response response = addEmployeeToJsonServer((new EmployeePayrollData("tiger", 400000.0, LocalDate.parse("2017-04-02"), 10000.0, 10000.0, 10000.0,
+				10000.0, 10000.0, new String[] { "berserk" }, "patanjali", "F")));
+		int statusCode = response.getStatusCode();
+		assertEquals(201, statusCode);
+		EmployeePayrollData empDataFromResponse = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+		employeePayrollService.employeePayrollList.add(empDataFromResponse);
+		System.out.println(employeePayrollService.employeePayrollList);
+		long count = employeePayrollService.employeePayrollList.size();
+		assertEquals(5, count);
 	}
 
 }

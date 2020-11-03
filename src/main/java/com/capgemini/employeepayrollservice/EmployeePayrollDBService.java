@@ -95,7 +95,6 @@ public class EmployeePayrollDBService {
 			employeePayrollDBService.prepareStatementForEmployeeData();
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 			employeePayrollDataStatement.setString(1, name);
-			System.out.println(employeePayrollDataStatement.toString());
 			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
 			employeePayrollList = employeePayrollDBService.getEmployeePayrollData(resultSet);
 			return employeePayrollList;
@@ -109,7 +108,6 @@ public class EmployeePayrollDBService {
 		List<EmployeePayrollData> employeeDataList = new ArrayList<EmployeePayrollData>();
 		while (resultSet.next()) {
 			int id = resultSet.getInt("Id");
-			System.out.println(id);
 			String name = resultSet.getString("Name");
 			Double salary = resultSet.getDouble("salary");
 			LocalDate startDate = resultSet.getDate("start").toLocalDate();
@@ -175,7 +173,6 @@ public class EmployeePayrollDBService {
 					operation, gender);
 			String header = String.format("%s(salary)", operation);
 			Statement stmt = conn.prepareStatement(sql);
-			System.out.println(sql);
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				result = rs.getDouble(header);
@@ -200,7 +197,6 @@ public class EmployeePayrollDBService {
 			stmt.setString(1, name);
 			stmt.setString(3, startDate);
 			stmt.setString(4, gender);
-			System.out.println(stmt.toString());
 			stmt.executeUpdate();
 			stmt = conn.prepareStatement(
 					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
@@ -211,7 +207,6 @@ public class EmployeePayrollDBService {
 			stmt.setDouble(4, tax);
 			stmt.setDouble(5, net_pay);
 			stmt.setInt(6, id);
-			System.out.println(stmt.toString());
 			stmt.executeUpdate();
 			stmt = conn.prepareStatement("INSERT INTO emp_department(Id, department) values \r\n" + "(?, ?);");
 			stmt.setInt(1, id);
@@ -242,7 +237,6 @@ public class EmployeePayrollDBService {
 			stmtEmployee.setDouble(2, salary);
 			stmtEmployee.setString(1, name);
 			stmtEmployee.setString(3, start);
-			System.out.println(stmtEmployee.toString());
 			stmtEmployee.executeUpdate();
 			PreparedStatement stmtPayroll = conn.prepareStatement("INSERT INTO payroll( basic_pay,deductions,\r\n"
 					+ "			 taxable_pay, tax, net_pay,Id) values (?, ?, ?,?,?,?);");
@@ -252,7 +246,6 @@ public class EmployeePayrollDBService {
 			stmtPayroll.setDouble(4, tax);
 			stmtPayroll.setDouble(5, net_pay);
 			stmtPayroll.setInt(6, Id);
-			System.out.println(stmtPayroll.toString());
 			stmtPayroll.executeUpdate();
 			conn.commit();
 			return 1;
@@ -272,7 +265,7 @@ public class EmployeePayrollDBService {
 			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery("select max(Id) from employee_payroll;");
 			while (rs.next())
-				id = rs.getInt("max(Id)") + 1;
+				id = rs.getInt("max(Id)")+1;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -288,7 +281,6 @@ public class EmployeePayrollDBService {
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 			String sql = String.format("delete from employee_payroll where name=%s;", name);
 			Statement stmt = conn.prepareStatement(sql);
-			System.out.println(sql);
 			rs = stmt.executeQuery(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -303,6 +295,7 @@ public class EmployeePayrollDBService {
 		try (Connection conn = employeePayrollDBService.getConnection()) {
 			for (EmployeePayrollData e : empList) {
 				int id = getMaxId();
+				System.out.println(id);
 				conn.setAutoCommit(false);
 				PreparedStatement stmt = conn
 						.prepareStatement("INSERT INTO employee_payroll(name, salary, start,gender) values \r\n"
@@ -311,7 +304,6 @@ public class EmployeePayrollDBService {
 				stmt.setString(1, e.getName());
 				stmt.setString(3, e.getStartDate().toString());
 				stmt.setString(4, e.getGender());
-				System.out.println(stmt.toString());
 				stmt.executeUpdate();
 				stmt = conn.prepareStatement(
 						"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
@@ -322,7 +314,6 @@ public class EmployeePayrollDBService {
 				stmt.setDouble(4, e.getTax());
 				stmt.setDouble(5, e.getNet_pay());
 				stmt.setInt(6, id);
-				System.out.println(stmt.toString());
 				stmt.executeUpdate();
 				for (int i = 0; i < e.getDepartment().length; i++) {
 					String department[] = e.getDepartment();
@@ -359,7 +350,6 @@ public class EmployeePayrollDBService {
 			stmt.setString(1, e.getName());
 			stmt.setString(3, e.getStartDate().toString());
 			stmt.setString(4, e.getGender());
-			System.out.println(stmt.toString());
 			stmt.executeUpdate();
 			stmt = conn.prepareStatement(
 					"INSERT INTO payroll(basic_pay, deductions, taxable_pay,tax,net_pay,Id) values \r\n"
@@ -370,7 +360,6 @@ public class EmployeePayrollDBService {
 			stmt.setDouble(4, e.getTax());
 			stmt.setDouble(5, e.getNet_pay());
 			stmt.setInt(6, id);
-			System.out.println(stmt.toString());
 			stmt.executeUpdate();
 			for (int i = 0; i < e.getDepartment().length; i++) {
 				String department[] = e.getDepartment();
